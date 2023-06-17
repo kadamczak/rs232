@@ -389,6 +389,13 @@ namespace rs232
             this.ErrorText = "";
             this.OnPropertyChanged("ErrorText");
 
+            if(this.PortBox.SelectedIndex == -1)
+            {
+                this.ErrorText = "COM not available.";
+                this.OnPropertyChanged("ErrorText");
+                return;
+            }
+
             string a = this.PortBox.SelectedValue.ToString();
 
             //Fail if no COM has been selected.
@@ -599,11 +606,13 @@ namespace rs232
             string latestMessage = _localPort.ReadExisting();
             fullReceivedMessage.Append(latestMessage);
 
-            if (latestMessage.EndsWith(_localPort.NewLine))     //READ FULL MESSAGE WHEN TERMINATOR FOUND
+            string fullMessageString = fullReceivedMessage.ToString();
+
+            if (fullMessageString.EndsWith(_localPort.NewLine))     //READ FULL MESSAGE WHEN TERMINATOR FOUND
             {
                 //UPDATE "RECEIVED" BOX DISPLAY
-                string header = latestMessage.Substring(0, 2);
-                string content = latestMessage.Substring(2);
+                string header = fullMessageString.Substring(0, 2);
+                string content = fullMessageString.Substring(2);
 
                 Message receivedMessage = new Message(header, content);
                 this.receivedMessages.Add(receivedMessage);
